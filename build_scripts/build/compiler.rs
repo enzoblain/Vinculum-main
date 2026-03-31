@@ -1,8 +1,117 @@
-use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::{env, fs};
 
-pub fn compile_haskell_library(
+pub(super) fn find_ghc_version() -> Option<String> {
+    let output = Command::new("ghc").arg("--numeric-version").output().ok()?;
+    if output.status.success() {
+        Some(String::from_utf8_lossy(&output.stdout).trim().to_string())
+    } else {
+        None
+    }
+}
+
+pub(super) fn find_rts_dir() -> String {
+    if let Ok(dir) = env::var("HASKELL_RTS_DIR") {
+        return dir;
+    }
+
+    if let Ok(output) = Command::new("ghc-pkg")
+        .args(["field", "rts", "library-dirs"])
+        .output()
+        && output.status.success()
+    {
+        let out = String::from_utf8_lossy(&output.stdout);
+        for line in out.lines() {
+            let path_str = if line.contains("library-dirs:") {
+                line.splitn(2, ':').nth(1).unwrap_or("").trim()
+            } else {
+                line.trim()
+            };
+
+            if path_str.is_empty() {
+                continue;
+            }
+
+            let path = PathBuf::from(path_str);
+            let resolved = path.canonicalize().unwrap_or(path);
+
+            if resolved
+                .read_dir()
+                .ok()
+                .and_then(|mut d| {
+                    d.find(|e| {
+                        e.as_ref()
+                            .ok()
+                            .map(|e| e.file_name().to_string_lossy().starts_with("libHSrts-ghc"))
+                            .unwrap_or(false)
+                    })
+                })
+                .is_some()
+            {
+                return resolved.to_string_lossy().to_string();
+            }
+        }
+    }
+
+    if let Ok(output) = Command::new("ghc").arg("--print-libdir").output()
+        && output.status.success()
+    {
+        let libdir = String::from_utf8_lossy(&output.stdout).trim().to_string();
+
+        if let Ok(entries) = std::fs::read_dir(&libdir) {
+            for entry in entries.flatten() {
+                let name = entry.file_name();
+                let name = name.to_string_lossy();
+                if name.contains("-ghc-") && entry.path().is_dir() {
+                    return entry.path().to_string_lossy().to_string();
+                }
+            }
+        }
+
+        let rts = PathBuf::from(&libdir).join("rts");
+        if rts.exists() {
+            return rts.to_string_lossy().to_string();
+        }
+    }
+
+    panic!(
+        "Could not find the GHC RTS directory.\n\
+         Install GHC (via GHCup, Homebrew, or your package manager) \
+         or set HASKELL_RTS_DIR manually."
+    );
+}
+
+pub(super) fn find_rts_lib(rts_dir: &str) -> String {
+    if let Ok(lib) = env::var("HASKELL_RTS_LIB") {
+        return lib;
+    }
+
+    if let Some(version) = find_ghc_version() {
+        return format!("HSrts-ghc{}", version);
+    }
+
+    if let Ok(entries) = std::fs::read_dir(rts_dir) {
+        for entry in entries.flatten() {
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+
+            if name.starts_with("libHSrts-ghc") && name.ends_with(".a") {
+                return name
+                    .trim_start_matches("lib")
+                    .trim_end_matches(".a")
+                    .to_string();
+            }
+        }
+    }
+
+    panic!(
+        "Could not detect the GHC RTS version.\n\
+         Set HASKELL_RTS_LIB manually (e.g. HSrts-ghc9.6.7)."
+    );
+}
+
+pub(crate) fn compile_haskell_library(
     haskell_dir: &Path,
     c_dir: &Path,
     user_functions_file: &Path,
@@ -67,7 +176,7 @@ pub fn compile_haskell_library(
     }
 }
 
-pub fn copy_rts_library(rts_dir: &str, _rts_lib: &str, output_dir: &Path) {
+pub(crate) fn copy_rts_library(rts_dir: &str, _rts_lib: &str, output_dir: &Path) {
     let rts_path = Path::new(rts_dir);
 
     if !rts_path.exists() {

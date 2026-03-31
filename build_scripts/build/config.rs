@@ -1,3 +1,4 @@
+use crate::build_scripts::build::compiler::{find_rts_dir, find_rts_lib};
 use std::env;
 
 pub struct BuildConfig {
@@ -12,13 +13,14 @@ pub struct BuildConfig {
 }
 
 pub fn load_config() -> BuildConfig {
+    let rts_dir = find_rts_dir();
+    let rts_lib = find_rts_lib(&rts_dir);
+
     BuildConfig {
         lib_dir: env::var("HASKELL_LIB_DIR").unwrap_or_else(|_| "target/haskell".to_string()),
         lib_file: env::var("HASKELL_LIB_FILE").unwrap_or_else(|_| "HSmylib".to_string()),
-        rts_lib: env::var("HASKELL_RTS_LIB").unwrap_or_else(|_| "HSrts-ghc9.6.7".to_string()),
-        rts_dir: env::var("HASKELL_RTS_DIR").unwrap_or_else(|_| {
-            "/Users/enzoblain/.ghcup/ghc/9.6.7/lib/ghc-9.6.7/lib/aarch64-osx-ghc-9.6.7".to_string()
-        }),
+        rts_lib,
+        rts_dir,
         functions_file: env::var("HASKELL_FUNCTIONS_FILE")
             .unwrap_or_else(|_| "haskell_exports.toml".to_string()),
         haskell_dir: "build_scripts/haskell".to_string(),
