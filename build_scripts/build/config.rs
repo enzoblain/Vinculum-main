@@ -7,6 +7,7 @@ pub struct BuildConfig {
     pub rts_dir: String,
     pub functions_file: String,
     pub haskell_dir: String,
+    pub c_dir: String,
     pub user_functions_file: String,
 }
 
@@ -20,9 +21,9 @@ pub fn load_config() -> BuildConfig {
         }),
         functions_file: env::var("HASKELL_FUNCTIONS_FILE")
             .unwrap_or_else(|_| "haskell_exports.toml".to_string()),
-        haskell_dir: env::var("HASKELL_SOURCE_DIR")
-            .unwrap_or_else(|_| "build_scripts/haskell".to_string()),
+        haskell_dir: "build_scripts/haskell".to_string(),
+        c_dir: "build_scripts/c".to_string(),
         user_functions_file: env::var("HASKELL_USER_FUNCTIONS_FILE")
-            .unwrap_or_else(|_| "haskell/UserFunctions.hs".to_string()),
+            .unwrap_or_else(|_| "haskell/Script.hs".to_string()),
     }
 }

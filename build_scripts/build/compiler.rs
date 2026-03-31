@@ -4,6 +4,7 @@ use std::process::Command;
 
 pub fn compile_haskell_library(
     haskell_dir: &Path,
+    c_dir: &Path,
     user_functions_file: &Path,
     output_dir: &Path,
     lib_name: &str,
@@ -22,17 +23,32 @@ pub fn compile_haskell_library(
         "lib"
     };
 
+    let build_dir = output_dir.join("build");
+
+    fs::create_dir_all(output_dir).expect("Failed to create Haskell output directory");
+    fs::create_dir_all(&build_dir).expect("Failed to create Haskell intermediate build directory");
+
     let output_file = output_dir.join(format!("{lib_prefix}{lib_name}.{ext}"));
 
     let runtime = haskell_dir.join("Runtime.hs");
     let codec = haskell_dir.join("Codec.hs");
     let dispatch = haskell_dir.join("Dispatch.hs");
-    let stubs_rts = haskell_dir.join("StubbsRTS.c");
+    let stubs_rts = c_dir.join("StubbsRTS.c");
 
     let status = Command::new("ghc")
         .args([
             "-dynamic",
             "-shared",
+            "-outputdir",
+            build_dir.to_str().expect("Invalid build directory path"),
+            "-odir",
+            build_dir.to_str().expect("Invalid object directory path"),
+            "-hidir",
+            build_dir
+                .to_str()
+                .expect("Invalid interface directory path"),
+            "-stubdir",
+            build_dir.to_str().expect("Invalid stub directory path"),
             "-o",
             output_file.to_str().expect("Invalid output library path"),
             runtime.to_str().expect("Invalid Runtime.hs path"),
@@ -69,26 +85,19 @@ pub fn copy_rts_library(rts_dir: &str, _rts_lib: &str, output_dir: &Path) {
         match fs::read_dir(rts_path) {
             Ok(entries) => {
                 let mut copied_count = 0;
-                for entry in entries {
-                    if let Ok(entry) = entry {
-                        let path = entry.path();
-                        if let Some(file_name) = path.file_name() {
-                            if let Some(file_str) = file_name.to_str() {
-                                if file_str.starts_with("libHS") && file_str.ends_with(ext) {
-                                    let dest = output_dir.join(file_name);
-                                    match fs::copy(&path, &dest) {
-                                        Ok(_) => {
-                                            copied_count += 1;
-                                        }
-                                        Err(e) => {
-                                            println!(
-                                                "cargo:warning=Failed to copy {}: {}",
-                                                file_str, e
-                                            );
-                                        }
-                                    }
-                                }
-                            }
+
+                for entry in entries.flatten() {
+                    let path = entry.path();
+
+                    if let Some(file_str) = path.file_name().and_then(|f| f.to_str())
+                        && file_str.starts_with("libHS")
+                        && file_str.ends_with(ext)
+                    {
+                        let dest = output_dir.join(file_str);
+
+                        match fs::copy(&path, &dest) {
+                            Ok(_) => copied_count += 1,
+                            Err(e) => println!("cargo:warning=Failed to copy {}: {}", file_str, e),
                         }
                     }
                 }

@@ -1,3 +1,3 @@
-pub mod parser;
-pub mod types;
-pub mod validator;
+pub(crate) mod parser;
+pub(crate) mod types;
+pub(crate) mod validator;

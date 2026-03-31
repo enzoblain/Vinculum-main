@@ -3,7 +3,7 @@ use std::path::Path;
 
 use crate::build_scripts::config::types::{Function, Type};
 
-pub fn generate_haskell_dispatch(functions: &[Function], out_dir: &Path) {
+pub(crate) fn generate_haskell_dispatch(functions: &[Function], out_dir: &Path) {
     let dest = out_dir.join("Dispatch.hs");
 
     let mut code = String::new();

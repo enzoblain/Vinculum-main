@@ -1,6 +1,6 @@
 use super::types::Function;
 
-pub fn validate_functions(functions: &[Function]) {
+pub(crate) fn validate_functions(functions: &[Function]) {
     if functions.is_empty() {
         panic!("Configuration error: no functions defined");
     }

@@ -1,2 +1,2 @@
-pub mod dispatch;
-pub mod functions;
+pub(super) mod dispatch;
+pub(super) mod functions;

@@ -4,7 +4,7 @@ use crate::ffi::{call_haskell_function, free_haskell_buffer};
 
 include!(concat!(env!("OUT_DIR"), "/generated_functions.rs"));
 
-pub enum Value {
+enum Value {
     Int(i64),
     Float(f64),
     Bool(bool),
@@ -13,42 +13,42 @@ pub enum Value {
 }
 
 impl Value {
-    pub fn into_int(self) -> i64 {
+    fn into_int(self) -> i64 {
         match self {
             Value::Int(value) => value,
             _ => panic!("Expected Value::Int"),
         }
     }
 
-    pub fn into_float(self) -> f64 {
+    fn into_float(self) -> f64 {
         match self {
             Value::Float(value) => value,
             _ => panic!("Expected Value::Float"),
         }
     }
 
-    pub fn into_bool(self) -> bool {
+    fn into_bool(self) -> bool {
         match self {
             Value::Bool(value) => value,
             _ => panic!("Expected Value::Bool"),
         }
     }
 
-    pub fn into_string(self) -> String {
+    fn into_string(self) -> String {
         match self {
             Value::String(value) => value,
             _ => panic!("Expected Value::String"),
         }
     }
 
-    pub fn into_bytes(self) -> Vec<u8> {
+    fn into_bytes(self) -> Vec<u8> {
         match self {
             Value::Bytes(value) => value,
             _ => panic!("Expected Value::Bytes"),
         }
     }
 
-    pub fn to_bytes(&self) -> Vec<u8> {
+    fn to_bytes(&self) -> Vec<u8> {
         let mut buf = Vec::new();
 
         match self {
@@ -80,7 +80,7 @@ impl Value {
         buf
     }
 
-    pub fn encode_slice(args: &[Value]) -> Vec<u8> {
+    fn encode_slice(args: &[Value]) -> Vec<u8> {
         let mut buf = Vec::new();
 
         for arg in args {
@@ -90,7 +90,7 @@ impl Value {
         buf
     }
 
-    pub fn from_bytes(bytes: &[u8]) -> Value {
+    fn from_bytes(bytes: &[u8]) -> Value {
         let tag = bytes[0];
 
         match tag {
@@ -125,7 +125,7 @@ impl Value {
     }
 }
 
-pub fn call_haskell_typed(name: &str, args: &[Value]) -> Value {
+pub(super) fn call_haskell_typed(name: &str, args: &[Value]) -> Value {
     let input = Value::encode_slice(args);
 
     let mut out_ptr: *mut u8 = std::ptr::null_mut();

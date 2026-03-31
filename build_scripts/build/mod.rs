@@ -1,4 +1,4 @@
-pub mod compiler;
-pub mod config;
-pub mod linker;
-pub mod validator;
+pub(crate) mod compiler;
+pub(crate) mod config;
+pub(crate) mod linker;
+pub(crate) mod validator;

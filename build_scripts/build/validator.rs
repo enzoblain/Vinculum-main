@@ -2,7 +2,7 @@ use std::path::Path;
 
 use super::config::BuildConfig;
 
-pub fn validate_functions_file(path: &Path) {
+pub(crate) fn validate_functions_file(path: &Path) {
     if !path.exists() {
         panic!(
             "Invalid configuration: HASKELL_FUNCTIONS_FILE does not exist: {}",
@@ -18,7 +18,7 @@ pub fn validate_functions_file(path: &Path) {
     }
 }
 
-pub fn validate_library_dir(path: &Path) {
+pub(crate) fn validate_library_dir(path: &Path) {
     if !path.exists() {
         panic!(
             "Invalid configuration: HASKELL_LIB_DIR does not exist: {}",
@@ -34,7 +34,7 @@ pub fn validate_library_dir(path: &Path) {
     }
 }
 
-pub fn shared_library_extension() -> &'static str {
+pub(crate) fn shared_library_extension() -> &'static str {
     if cfg!(target_os = "windows") {
         "dll"
     } else if cfg!(target_os = "macos") {
@@ -44,7 +44,7 @@ pub fn shared_library_extension() -> &'static str {
     }
 }
 
-pub fn library_filename(name: &str, ext: &str) -> String {
+pub(crate) fn library_filename(name: &str, ext: &str) -> String {
     if cfg!(target_os = "windows") {
         format!("{}.{}", name, ext)
     } else {
@@ -52,7 +52,7 @@ pub fn library_filename(name: &str, ext: &str) -> String {
     }
 }
 
-pub fn validate_main_library(config: &BuildConfig) {
+pub(crate) fn validate_main_library(config: &BuildConfig) {
     let lib_path = Path::new(&config.lib_dir);
     let ext = shared_library_extension();
     let lib_filename = library_filename(&config.lib_file, ext);
@@ -73,7 +73,7 @@ pub fn validate_main_library(config: &BuildConfig) {
     }
 }
 
-pub fn warn_if_rts_missing(config: &BuildConfig) {
+pub(crate) fn warn_if_rts_missing(config: &BuildConfig) {
     let lib_path = Path::new(&config.lib_dir);
     let ext = shared_library_extension();
     let rts_filename = library_filename(&config.rts_lib, ext);

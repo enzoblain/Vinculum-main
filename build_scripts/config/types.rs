@@ -1,24 +1,26 @@
-#[derive(serde::Deserialize)]
-pub struct Config {
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub(crate) struct Config {
     #[serde(rename = "function")]
     pub functions: Vec<Function>,
 }
 
-#[derive(serde::Deserialize)]
-pub struct Function {
+#[derive(Deserialize)]
+pub(crate) struct Function {
     pub name: String,
     pub args: Vec<Arg>,
     pub r#return: Type,
 }
 
-#[derive(serde::Deserialize)]
-pub struct Arg {
+#[derive(Deserialize)]
+pub(crate) struct Arg {
     pub name: String,
     pub r#type: Type,
 }
 
-#[derive(serde::Deserialize)]
-pub enum Type {
+#[derive(Deserialize)]
+pub(crate) enum Type {
     Int,
     Float,
     Bool,
@@ -27,7 +29,7 @@ pub enum Type {
 }
 
 impl Type {
-    pub fn rust_type(&self) -> &'static str {
+    pub(crate) fn rust_type(&self) -> &'static str {
         match self {
             Type::Int => "i64",
             Type::Float => "f64",
@@ -37,7 +39,7 @@ impl Type {
         }
     }
 
-    pub fn return_converter(&self) -> &'static str {
+    pub(crate) fn return_converter(&self) -> &'static str {
         match self {
             Type::Int => "Value::into_int",
             Type::Float => "Value::into_float",
@@ -47,7 +49,7 @@ impl Type {
         }
     }
 
-    pub fn rust_value_ctor(&self, name: &str) -> String {
+    pub(crate) fn rust_value_ctor(&self, name: &str) -> String {
         match self {
             Type::Int => format!("Value::Int({})", name),
             Type::Float => format!("Value::Float({})", name),
@@ -57,7 +59,7 @@ impl Type {
         }
     }
 
-    pub fn haskell_arg_expr(&self, name: &str) -> String {
+    pub(crate) fn haskell_arg_expr(&self, name: &str) -> String {
         match self {
             Type::Int => format!("(fromIntegral {})", name),
             Type::Float => name.to_string(),
@@ -67,7 +69,7 @@ impl Type {
         }
     }
 
-    pub fn haskell_return_expr(&self, expr: &str) -> String {
+    pub(crate) fn haskell_return_expr(&self, expr: &str) -> String {
         match self {
             Type::Int => format!("(fromIntegral ({}))", expr),
             Type::Float => expr.to_string(),

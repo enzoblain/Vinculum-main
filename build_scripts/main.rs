@@ -11,7 +11,7 @@ use super::codegen::dispatch::generate_haskell_dispatch;
 use super::codegen::functions::generate_functions;
 use super::config::parser::parse_haskell_functions;
 
-pub fn run() {
+pub(crate) fn run() {
     let config = load_config();
 
     let functions_path = Path::new(&config.functions_file);
@@ -22,6 +22,8 @@ pub fn run() {
     generate_functions(&functions);
 
     let haskell_dir = Path::new(&config.haskell_dir);
+    let c_dir = Path::new(&config.c_dir);
+    let user_functions_path = Path::new(&config.user_functions_file);
     generate_haskell_dispatch(&functions, haskell_dir);
 
     let lib_path = Path::new(&config.lib_dir);
@@ -31,7 +33,8 @@ pub fn run() {
 
     compile_haskell_library(
         haskell_dir,
-        Path::new(&config.user_functions_file),
+        c_dir,
+        user_functions_path,
         lib_path,
         &config.lib_file,
     );

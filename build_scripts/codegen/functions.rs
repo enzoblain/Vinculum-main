@@ -3,7 +3,7 @@ use std::{env, fs};
 
 use crate::build_scripts::config::types::Function;
 
-pub fn generate_functions(functions: &[Function]) {
+pub(crate) fn generate_functions(functions: &[Function]) {
     let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR is not set"));
     let dest = out_dir.join("generated_functions.rs");
 
