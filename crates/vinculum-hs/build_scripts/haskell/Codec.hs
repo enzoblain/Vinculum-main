@@ -23,6 +23,7 @@ data Value
     | VString String
     | VBytes BS.ByteString
     | VOption (Maybe Value)
+    | VVec [Value]
 
 decodeValues :: BS.ByteString -> [Value]
 decodeValues bs
@@ -110,8 +111,23 @@ decodeOne bs =
                              in (VOption (Just value), finalRemaining)
                         | otherwise -> error ("Invalid Option tag: " ++ show optTag)
 
+            | tag == 15 ->
+                let (lenBytes, afterLen) = BS.splitAt 8 rest
+                    vecLen = fromIntegral (bytesToWord64 lenBytes)
+                    (vecElements, vecRemaining) = decodeNValues vecLen afterLen
+                 in (VVec vecElements, vecRemaining)
+
             | otherwise ->
                 error ("Invalid type tag: " ++ show tag)
+
+decodeNValues :: Int -> BS.ByteString -> ([Value], BS.ByteString)
+decodeNValues 0 bs = ([], bs)
+decodeNValues n bs
+    | n > 0 =
+        let (value, rest) = decodeOne bs
+            (restValues, finalRemaining) = decodeNValues (n - 1) rest
+         in (value : restValues, finalRemaining)
+    | otherwise = error "Invalid vector length"
 
 encodeInt8 :: Int8 -> BS.ByteString
 encodeInt8 x =
@@ -194,6 +210,12 @@ decodeOptionWith :: (Value -> a) -> Maybe Value -> Maybe a
 decodeOptionWith _ Nothing = Nothing
 decodeOptionWith f (Just v) = Just (f v)
 
+encodeVec :: [Value] -> BS.ByteString
+encodeVec values =
+    let lenBytes = word64ToBytes (fromIntegral (length values))
+        encodedValues = BS.concat (map encodeValue values)
+     in BS.concat [BS.pack [15], BS.pack lenBytes, encodedValues]
+
 encodeValue :: Value -> BS.ByteString
 encodeValue val = case val of
     VInt8 x -> encodeInt8 x
@@ -211,6 +233,7 @@ encodeValue val = case val of
     VString s -> encodeString s
     VBytes b -> encodeBytes b
     VOption opt -> encodeOption opt
+    VVec v -> encodeVec v
 
 word8ToBytes :: Word8 -> [Word8]
 word8ToBytes w = [w]

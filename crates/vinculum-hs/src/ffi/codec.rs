@@ -212,6 +212,20 @@ impl Value {
             .expect("internal FFI type error: expected Value::Option")
     }
 
+    #[allow(dead_code)]
+    pub(crate) fn try_into_vec(self) -> Result<Vec<Value>, FfiError> {
+        match self {
+            Value::Vec(value) => Ok(value),
+            _ => Err(FfiError::DecodeError),
+        }
+    }
+
+    #[allow(dead_code)]
+    pub(crate) fn into_vec(self) -> Vec<Value> {
+        self.try_into_vec()
+            .expect("internal FFI type error: expected Value::Vec")
+    }
+
     pub(crate) fn to_bytes(&self) -> Vec<u8> {
         let mut buf = Vec::new();
 
@@ -286,6 +300,13 @@ impl Value {
                     None => {
                         buf.push(0);
                     }
+                }
+            }
+            Value::Vec(values) => {
+                buf.push(15);
+                buf.extend_from_slice(&(values.len() as u64).to_le_bytes());
+                for value in values {
+                    buf.extend_from_slice(&value.to_bytes());
                 }
             }
         }
@@ -463,6 +484,30 @@ impl Value {
                     }
                     _ => Err(FfiError::InvalidTag(option_tag)),
                 }
+            }
+            15 => {
+                if bytes.len() < 9 {
+                    return Err(FfiError::UnexpectedEof);
+                }
+
+                let mut len_bytes = [0u8; 8];
+                len_bytes.copy_from_slice(&bytes[1..9]);
+                let vec_len = u64::from_le_bytes(len_bytes) as usize;
+
+                let mut values = Vec::new();
+                let mut pos = 9;
+
+                for _ in 0..vec_len {
+                    if pos >= bytes.len() {
+                        return Err(FfiError::UnexpectedEof);
+                    }
+                    let value = Self::from_bytes_checked(&bytes[pos..])?;
+                    let encoded = value.to_bytes();
+                    pos += encoded.len();
+                    values.push(value);
+                }
+
+                Ok(Value::Vec(values))
             }
             _ => Err(FfiError::InvalidTag(tag)),
         }

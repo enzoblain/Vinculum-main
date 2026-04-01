@@ -14,3 +14,6 @@ tryGetString n
     | n == 0 = Nothing
     | n > 0 = Just "positive"
     | otherwise = Just "negative"
+
+addToAll :: Int64 -> [Int64] -> [Int64]
+addToAll n xs = map (+ n) xs

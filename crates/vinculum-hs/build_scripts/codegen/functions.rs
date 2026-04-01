@@ -76,6 +76,9 @@ fn generate_result_conversion(ty: &Type) -> String {
                 inner_converter
             )
         }
+        Type::Vec(_) => {
+            ty.rust_return_converter("result")
+        }
         _ => {
             let converter = ty.return_converter();
             format!("result.{}()", converter)

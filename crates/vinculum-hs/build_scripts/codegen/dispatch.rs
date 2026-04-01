@@ -92,6 +92,7 @@ impl Type {
             Type::String => format!("VString {}", name),
             Type::Bytes => format!("VBytes {}", name),
             Type::Maybe(_) => format!("VOption {}", name),
+            Type::Vec(_) => format!("VVec {}", name),
         }
     }
 
@@ -112,6 +113,7 @@ impl Type {
             Type::String => "VString".to_string(),
             Type::Bytes => "VBytes".to_string(),
             Type::Maybe(_) => unreachable!("Maybe should not be used as a value constructor"),
+            Type::Vec(_) => unreachable!("Vec should not be used as a value constructor"),
         }
     }
 
@@ -132,6 +134,7 @@ impl Type {
             Type::String => "encodeString".to_string(),
             Type::Bytes => "encodeBytes".to_string(),
             Type::Maybe(inner) => format!("encodeOptionWith {}", inner.haskell_value_constructor()),
+            Type::Vec(_) => "encodeVec".to_string(),
         }
     }
 }

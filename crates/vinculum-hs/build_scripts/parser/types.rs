@@ -28,6 +28,7 @@ pub(crate) enum Type {
     String,
     Bytes,
     Maybe(Box<Type>),
+    Vec(Box<Type>),
 }
 
 impl Type {
@@ -48,6 +49,7 @@ impl Type {
             Type::String => "String".to_string(),
             Type::Bytes => "Vec<u8>".to_string(),
             Type::Maybe(inner) => format!("Option<{}>", inner.rust_type()),
+            Type::Vec(inner) => format!("Vec<{}>", inner.rust_type()),
         }
     }
 
@@ -68,6 +70,7 @@ impl Type {
             Type::String => "into_string".to_string(),
             Type::Bytes => "into_bytes".to_string(),
             Type::Maybe(_) => "into_option".to_string(),
+            Type::Vec(_) => "into_vec".to_string(),
         }
     }
 
@@ -95,6 +98,55 @@ impl Type {
                     name, inner_ctor
                 )
             }
+            Type::Vec(inner) => {
+                let inner_ctor = inner.rust_value_ctor("v");
+                format!("Value::Vec({}.into_iter().map(|v| {}).collect())", name, inner_ctor)
+            }
+        }
+    }
+
+    pub(crate) fn rust_return_converter(&self, name: &str) -> String {
+        match self {
+            Type::Int8 => format!("{}.into_int8()", name),
+            Type::Int16 => format!("{}.into_int16()", name),
+            Type::Int32 => format!("{}.into_int32()", name),
+            Type::Int64 => format!("{}.into_int64()", name),
+            Type::Word8 => format!("{}.into_word8()", name),
+            Type::Word16 => format!("{}.into_word16()", name),
+            Type::Word32 => format!("{}.into_word32()", name),
+            Type::Word64 => format!("{}.into_word64()", name),
+            Type::Float32 => format!("{}.into_float32()", name),
+            Type::Float64 => format!("{}.into_float64()", name),
+            Type::Bool => format!("{}.into_bool()", name),
+            Type::Char => format!("{}.into_char()", name),
+            Type::String => format!("{}.into_string()", name),
+            Type::Bytes => format!("{}.into_bytes()", name),
+            Type::Maybe(inner) => format!("{}.into_option().and_then(|val| {{ if let Value::{} = *val {{ Some(x) }} else {{ None }} }})", name, inner.rust_type()),
+            Type::Vec(inner) => {
+                let inner_extractor = inner.rust_vec_element_extractor();
+                format!("{}.into_vec().into_iter().map(|v| {}).collect()", name, inner_extractor)
+            }
+        }
+    }
+
+    pub(crate) fn rust_vec_element_extractor(&self) -> String {
+        match self {
+            Type::Int8 => "if let Value::Int8(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Int16 => "if let Value::Int16(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Int32 => "if let Value::Int32(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Int64 => "if let Value::Int64(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Word8 => "if let Value::Word8(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Word16 => "if let Value::Word16(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Word32 => "if let Value::Word32(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Word64 => "if let Value::Word64(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Float32 => "if let Value::Float32(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Float64 => "if let Value::Float64(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Bool => "if let Value::Bool(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Char => "if let Value::Char(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::String => "if let Value::String(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Bytes => "if let Value::Bytes(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Maybe(_) => "if let Value::Option(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
+            Type::Vec(_) => "if let Value::Vec(x) = v { x } else { panic!(\"Type mismatch\") }".to_string(),
         }
     }
 
@@ -116,6 +168,7 @@ impl Type {
             Type::String => "fromValueString".to_string(),
             Type::Bytes => "fromValueBytes".to_string(),
             Type::Maybe(_) => unreachable!("Maybe should not use from_value_function"),
+            Type::Vec(_) => unreachable!("Vec should not use from_value_function"),
         }
     }
 
@@ -140,6 +193,11 @@ impl Type {
                 inner.from_value_function(),
                 name
             ),
+            Type::Vec(inner) => format!(
+                "(map {} {})",
+                inner.from_value_function(),
+                name
+            ),
         }
     }
 
@@ -160,6 +218,7 @@ impl Type {
             Type::String => expr.to_string(),
             Type::Bytes => expr.to_string(),
             Type::Maybe(_) => expr.to_string(),
+            Type::Vec(inner) => format!("map {} ({})", inner.haskell_value_constructor(), expr),
         }
     }
 }

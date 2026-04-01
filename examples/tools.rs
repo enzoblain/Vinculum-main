@@ -1,4 +1,4 @@
-use vinculum_hs::functions::tools::{addIfJust, concatStrings, tryGetString};
+use vinculum_hs::functions::tools::{addIfJust, addToAll, concatStrings, tryGetString};
 
 #[vinculum_hs::main(haskell_directory = "examples/haskell")]
 fn main() {
@@ -20,4 +20,9 @@ fn main() {
 
     let result = tryGetString(0);
     println!("tryGetString(0) = {:?}", result);
+
+    let v = vec![1, 2, 3];
+    let result = addToAll(4, v);
+
+    println!("{result:?}");
 }
