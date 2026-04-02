@@ -1,5 +1,5 @@
 #[inline]
-pub(crate) fn is_rust_keyword(name: &str) -> bool {
+pub(super) fn is_rust_keyword(name: &str) -> bool {
     matches!(
         name,
         "as" | "break"

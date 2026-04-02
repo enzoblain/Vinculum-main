@@ -1,14 +1,13 @@
-use super::types::Type;
+use super::types::HaskellType;
 use super::utils::is_rust_keyword;
 
-#[derive(Debug)]
 pub(crate) struct Arg {
     pub(crate) name: String,
-    pub(crate) r#type: Type,
+    pub(crate) r#type: HaskellType,
 }
 
 impl Arg {
-    pub(crate) fn new(name: String, r#type: Type) -> Self {
+    pub(crate) fn new(name: String, r#type: HaskellType) -> Self {
         Self { name, r#type }
     }
 }

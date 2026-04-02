@@ -1,9 +1,8 @@
-use crate::build_scripts::parser::functions::Function;
-use crate::build_scripts::parser::types::Type;
-use crate::build_scripts::utils::to_snake_case;
 use std::path::PathBuf;
 use std::{env, fs};
 
+use crate::build_scripts::parser::Function;
+use crate::build_scripts::utils::to_snake_case;
 pub(crate) fn generate_functions_with_modules(file_modules: &[(String, Vec<Function>)]) {
     let manifest_dir =
         PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR is not set"));
@@ -37,19 +36,19 @@ fn generate_function(function: &Function, module_name: &str) -> String {
     let args_sig = function
         .args
         .iter()
-        .map(|arg| format!("{}: {}", arg.name, arg.r#type.rust_type()))
+        .map(|arg| format!("{}: {}", arg.name, arg.r#type.rust_name()))
         .collect::<Vec<_>>()
         .join(", ");
 
     let args_values = function
         .args
         .iter()
-        .map(|arg| arg.r#type.rust_value_ctor(&arg.name))
+        .map(|arg| arg.r#type.to_rust_value(&arg.name))
         .collect::<Vec<_>>()
         .join(", ");
 
-    let return_type = function.r#return.rust_type();
-    let result_conversion = generate_result_conversion(&function.r#return);
+    let return_type = function.r#return.rust_name();
+    let result_conversion = function.r#return.from_rust_value();
     let qualified_name = format!("{}_{}", to_snake_case(module_name), function.name);
     let description_comments = function
         .description
@@ -76,9 +75,4 @@ pub fn {name}({args_sig}) -> {return_type} {{
         args_values = args_values,
         result_conversion = result_conversion,
     )
-}
-
-fn generate_result_conversion(ty: &Type) -> String {
-    let converter = ty.return_converter();
-    format!("result.{}()", converter)
 }

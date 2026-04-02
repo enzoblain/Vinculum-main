@@ -5,7 +5,7 @@ mod build_scripts;
 
 use build_scripts::build::{compiler, config, linker, validator};
 use build_scripts::codegen::{dispatch, functions as codegen_functions};
-use build_scripts::parser::core::extract_functions;
+use build_scripts::parser::extract_functions;
 use build_scripts::utils::{capitalize_first, to_snake_case};
 
 fn main() {

@@ -2,15 +2,14 @@ use std::mem;
 
 use super::args::Arg;
 use super::errors::ParseError;
-use super::types::Type;
+use super::types::HaskellType;
 use super::utils::is_rust_keyword;
 
-#[derive(Debug)]
 pub(crate) struct Function {
     pub(crate) description: Vec<String>,
     pub(crate) name: String,
     pub(crate) args: Vec<Arg>,
-    pub(crate) r#return: Type,
+    pub(crate) r#return: HaskellType,
 }
 
 #[derive(Default)]
@@ -46,21 +45,24 @@ impl TryInto<Function> for FunctionBuffer {
         let (_, raw_types) =
             signature
                 .split_once(":: ")
-                .ok_or(ParseError::MissingTypeAnnotation {
+                .ok_or(ParseError::MissingHaskellTypeAnnotation {
                     signature: signature.clone(),
                 })?;
 
         let parts: Vec<&str> = raw_types.split("->").map(str::trim).collect();
 
-        let (return_type, arg_types) = parts.split_last().ok_or(ParseError::MissingReturnType {
-            signature: signature.clone(),
-        })?;
+        let (return_type, arg_types) =
+            parts
+                .split_last()
+                .ok_or(ParseError::MissingReturnHaskellType {
+                    signature: signature.clone(),
+                })?;
 
         let args = if self.args.is_empty() {
             arg_types
                 .iter()
                 .enumerate()
-                .map(|(i, t)| Ok(Arg::new(format!("arg{}", i), Type::try_from(*t)?)))
+                .map(|(i, t)| Ok(Arg::new(format!("arg{}", i), HaskellType::try_from(*t)?)))
                 .collect::<Result<Vec<_>, ParseError>>()?
         } else {
             if self.args.len() != arg_types.len() {
@@ -74,7 +76,7 @@ impl TryInto<Function> for FunctionBuffer {
             self.args
                 .into_iter()
                 .zip(arg_types.iter())
-                .map(|(name, t)| Ok(Arg::new(name, Type::try_from(*t)?)))
+                .map(|(name, t)| Ok(Arg::new(name, HaskellType::try_from(*t)?)))
                 .collect::<Result<Vec<_>, ParseError>>()?
         };
 
@@ -82,7 +84,7 @@ impl TryInto<Function> for FunctionBuffer {
             description: self.description,
             name: name_ref.to_string(),
             args,
-            r#return: Type::try_from(*return_type)?,
+            r#return: HaskellType::try_from(*return_type)?,
         })
     }
 }

@@ -4,7 +4,7 @@ use std::path::Path;
 use crate::build_scripts::build::compiler::{find_rts_dir, find_rts_lib};
 use crate::build_scripts::build::errors::ConfigLoadError;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct BuildConfig {
     pub lib_dir: String,
     pub lib_file: String,

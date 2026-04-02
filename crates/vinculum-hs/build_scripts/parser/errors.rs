@@ -17,11 +17,11 @@ pub(crate) enum ParseError {
     ReservedRustKeyword {
         name: String,
     },
-    UnsupportedType(String),
-    MissingTypeAnnotation {
+    UnsupportedHaskellType(String),
+    MissingHaskellTypeAnnotation {
         signature: String,
     },
-    MissingReturnType {
+    MissingReturnHaskellType {
         signature: String,
     },
     ArgumentCountMismatch {
@@ -50,17 +50,17 @@ impl Display for ParseError {
             ParseError::ReservedRustKeyword { name } => {
                 write!(f, "name `{}` is a reserved Rust keyword", name)
             }
-            ParseError::UnsupportedType(t) => {
+            ParseError::UnsupportedHaskellType(t) => {
                 write!(f, "unsupported type `{}`", t)
             }
-            ParseError::MissingTypeAnnotation { signature } => {
+            ParseError::MissingHaskellTypeAnnotation { signature } => {
                 write!(
                     f,
                     "missing type annotation in signature `{}` (expected `::`)",
                     signature
                 )
             }
-            ParseError::MissingReturnType { signature } => {
+            ParseError::MissingReturnHaskellType { signature } => {
                 write!(f, "missing return type in signature `{}`", signature)
             }
             ParseError::ArgumentCountMismatch {
