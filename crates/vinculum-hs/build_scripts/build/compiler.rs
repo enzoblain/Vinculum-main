@@ -112,8 +112,7 @@ pub(crate) fn find_rts_lib(rts_dir: &str) -> String {
 }
 
 pub(crate) fn compile_haskell_library(
-    haskell_dir: &Path,
-    c_dir: &Path,
+    ffi_dir: &Path,
     user_functions_file: &Path,
     output_dir: &Path,
     lib_name: &str,
@@ -139,11 +138,11 @@ pub(crate) fn compile_haskell_library(
 
     let output_file = output_dir.join(format!("{lib_prefix}{lib_name}.{ext}"));
 
-    let runtime = haskell_dir.join("Runtime.hs");
-    let codec = haskell_dir.join("Codec.hs");
-    let dispatch = haskell_dir.join("Dispatch.hs");
+    let runtime = ffi_dir.join("lib/Runtime.hs");
+    let codec = ffi_dir.join("lib/Codec.hs");
+    let dispatch = ffi_dir.join("generated/Dispatch.hs");
 
-    let stubs_rts_src = c_dir.join("StubbsRTS.c");
+    let stubs_rts_src = ffi_dir.join("lib/StubbsRTS.c");
     let stubs_rts = build_dir.join("StubbsRTS.c");
     fs::copy(&stubs_rts_src, &stubs_rts).expect("Failed to copy StubbsRTS.c to build directory");
 

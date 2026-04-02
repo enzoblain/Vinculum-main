@@ -103,10 +103,9 @@ fn main() {
 
     codegen_functions::generate_functions_with_modules(&file_modules);
 
-    let haskell_build_dir = Path::new("build_scripts/haskell");
-    let c_dir = Path::new("build_scripts/c");
+    let ffi_dir = Path::new("build_scripts/ffi");
 
-    dispatch::generate_haskell_dispatch(&file_modules, haskell_build_dir)
+    dispatch::generate_haskell_dispatch(&file_modules, ffi_dir)
         .unwrap_or_else(|e| panic!("Failed to generate Haskell dispatch: {}", e));
 
     let lib_path = Path::new(&config.lib_dir);
@@ -115,13 +114,7 @@ fn main() {
 
     validator::validate_library_dir(lib_path).unwrap_or_else(|e| panic!("{e}"));
 
-    compiler::compile_haskell_library(
-        haskell_build_dir,
-        c_dir,
-        &user_functions_path,
-        lib_path,
-        &config.lib_file,
-    );
+    compiler::compile_haskell_library(ffi_dir, &user_functions_path, lib_path, &config.lib_file);
 
     validator::validate_main_library(&config).unwrap_or_else(|e| panic!("{e}"));
 
@@ -136,15 +129,11 @@ fn main() {
 
     println!(
         "cargo:rerun-if-changed={}",
-        Path::new(haskell_build_dir).join("Runtime.hs").display()
+        Path::new(ffi_dir).join("lib/Runtime.hs").display()
     );
     println!(
         "cargo:rerun-if-changed={}",
-        Path::new(haskell_build_dir).join("Codec.hs").display()
-    );
-    println!(
-        "cargo:rerun-if-changed={}",
-        Path::new(haskell_build_dir).join("Dispatch.hs").display()
+        Path::new(ffi_dir).join("lib/Codec.hs").display()
     );
     println!(
         "cargo:rerun-if-changed={}",
