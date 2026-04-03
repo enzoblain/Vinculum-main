@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use crate::build_scripts::parser::{Function, extract_functions};
+use crate::build_scripts::parser::{extract_functions, Function};
 
 pub(crate) fn collect_file_modules(
     src_dir: &Path,
@@ -67,14 +67,6 @@ pub(crate) fn generate_user_functions_module(file_modules: &[(String, Vec<Functi
         imports.join("\n"),
         wrappers.join("\n"),
     )
-}
-
-pub(crate) fn emit_rerun_if_changed(ffi_dir: &Path, functions_dir: &str) {
-    for file in ["lib/Runtime.hs", "lib/Codec.hs"] {
-        println!("cargo:rerun-if-changed={}", ffi_dir.join(file).display());
-    }
-
-    println!("cargo:rerun-if-changed={functions_dir}");
 }
 
 pub(crate) fn log_registered_functions(file_modules: &[(String, Vec<Function>)]) {

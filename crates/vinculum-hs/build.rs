@@ -10,8 +10,7 @@ use build_scripts::build::{compiler, linker, validator};
 use build_scripts::codegen::{generate_functions_with_modules, generate_haskell_dispatch};
 use build_scripts::utils::config::load_config;
 use build_scripts::utils::helpers::{
-    collect_file_modules, emit_rerun_if_changed, generate_user_functions_module,
-    log_registered_functions,
+    collect_file_modules, generate_user_functions_module, log_registered_functions,
 };
 
 fn main() {
@@ -40,7 +39,7 @@ fn main() {
         .unwrap_or_else(|e| panic!("Failed to create Haskell build dir: {e}"));
 
     println!("cargo:rerun-if-changed=Cargo.toml");
-    emit_rerun_if_changed(ffi_dir, &config.functions_dir);
+    println!("cargo:rerun-if-changed={}", config.functions_dir);
 
     let current_fingerprint = fingerprint_inputs(&manifest_path, haskell_dir, ffi_dir)
         .unwrap_or_else(|e| panic!("Failed to fingerprint build inputs: {e}"));

@@ -18,7 +18,7 @@ pub(crate) fn generate_functions_with_modules(file_modules: &[(String, Vec<Funct
 
         code.push_str(&format!("pub mod {} {{\n", rust_module_name));
         code.push_str("    use crate::ffi::call::call_haskell_typed;\n");
-        code.push_str("    use crate::ffi::value::Value;\n\n");
+        code.push_str("    use crate::ffi::value::{AcceptedTypes, Value};\n\n");
 
         for function in functions {
             code.push_str("    ");
@@ -52,7 +52,7 @@ fn generate_function(function: &Function, module_name: &str) -> String {
         "".to_string()
     } else {
         format!(
-            "<{}: 'static>",
+            "<{}: 'static + AcceptedTypes>",
             function.generics.join(": Any + Clone + 'static, ")
         )
         .trim_start_matches(", ")

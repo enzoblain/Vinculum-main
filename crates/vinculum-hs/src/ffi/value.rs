@@ -1,3 +1,4 @@
+#[allow(unused)]
 pub(crate) enum Value<T> {
     Int8(i8),
     Int16(i16),
@@ -16,3 +17,16 @@ pub(crate) enum Value<T> {
     Char(char),
     Generic(T),
 }
+
+#[allow(unused)]
+pub trait AcceptedTypes {}
+
+macro_rules! impl_accepted_types {
+    ($($t:ty),* $(,)?) => {
+        $(
+            impl AcceptedTypes for $t {}
+        )*
+    };
+}
+
+impl_accepted_types!(i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, bool, char);
