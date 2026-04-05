@@ -2,9 +2,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 pub(crate) fn prepare_vinculum(exports_dir: &Path) -> Result<(), String> {
-    let ffi_lib_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/build_scripts/ffi");
-    let ffi_generated_dir =
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("src/build_scripts/ffi/generated");
+    let ffi_lib_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("ffi");
+    let ffi_generated_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("ffi/generated");
 
     let vinculum_dir = exports_dir.join("vinculum");
     let generated_dir = vinculum_dir.join("generated");

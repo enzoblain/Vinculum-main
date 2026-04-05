@@ -1,5 +1,5 @@
-pub mod bindings;
+pub(crate) mod bindings;
 pub mod call;
-pub mod codec;
-pub mod errors;
+pub(crate) mod codec;
+pub(crate) mod errors;
 pub mod value;

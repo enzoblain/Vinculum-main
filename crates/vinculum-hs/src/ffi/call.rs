@@ -1,10 +1,9 @@
 use std::slice;
 
-use crate::ffi::bindings::{call_haskell_function, free_haskell_buffer};
-use crate::ffi::errors::FfiError;
-use crate::ffi::value::Value;
+use super::bindings::{call_haskell_function, free_haskell_buffer};
+use super::errors::FfiError;
+use super::value::Value;
 
-#[allow(dead_code)]
 pub fn call_haskell_typed<T: 'static>(name: &str, args: &[Value<T>]) -> Value<T> {
     call_haskell_typed_checked(name, args)
         .expect("internal FFI error while calling Haskell function")

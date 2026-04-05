@@ -5,7 +5,6 @@ unsafe extern "C" {
     pub(crate) fn haskell_init(argc: c_int, argv: *mut *mut c_char);
     pub(crate) fn haskell_exit();
 
-    #[allow(dead_code)]
     pub(crate) fn call_haskell_function(
         name_ptr: *const u8,
         name_len: usize,
@@ -15,6 +14,5 @@ unsafe extern "C" {
         out_len: *mut usize,
     );
 
-    #[allow(dead_code)]
     pub(crate) fn free_haskell_buffer(ptr: *mut u8);
 }

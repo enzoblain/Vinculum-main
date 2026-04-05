@@ -1,8 +1,8 @@
 use std::any::Any;
 use std::convert::TryFrom;
 
-use crate::ffi::errors::FfiError;
-use crate::ffi::value::{AcceptedTypes, Value};
+use super::errors::FfiError;
+use super::value::{AcceptedTypes, Value};
 
 impl<T: 'static> Value<T> {
     pub(crate) fn to_bytes(&self) -> Vec<u8> {
@@ -294,7 +294,6 @@ impl_try_from_value!(char, Char);
 impl_try_from_value!(String, String);
 
 impl<T: 'static + AcceptedTypes> Value<T> {
-    #[allow(unused)]
     pub fn into_generic(self) -> Result<T, FfiError> {
         let any_val: Box<dyn Any> = match self {
             Value::Generic(x) => return Ok(x),

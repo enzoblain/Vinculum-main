@@ -1,4 +1,3 @@
-#[allow(unused)]
 pub enum Value<T> {
     Int8(i8),
     Int16(i16),
@@ -21,7 +20,6 @@ pub enum Value<T> {
     Tuple(Vec<Value<T>>),
 }
 
-#[allow(unused)]
 pub trait AcceptedTypes {}
 
 macro_rules! impl_accepted_types {
@@ -32,4 +30,6 @@ macro_rules! impl_accepted_types {
     };
 }
 
-impl_accepted_types!(i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, bool, char, String);
+impl_accepted_types!(
+    i8, i16, i32, i64, u8, u16, u32, u64, f32, f64, bool, char, String
+);

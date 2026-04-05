@@ -1,5 +1,5 @@
-use crate::build_scripts::parser::Function;
-use crate::build_scripts::utils::helpers::to_snake_case;
+use crate::build::parser::Function;
+use crate::build::utils::helpers::to_snake_case;
 
 pub fn generate_haskell_dispatch(file_modules: &[(String, Vec<Function>)]) -> String {
     let mut code = String::new();

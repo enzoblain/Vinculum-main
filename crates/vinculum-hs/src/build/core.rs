@@ -1,8 +1,8 @@
 use std::{env, fs};
 
-use crate::build_scripts::build::{cabal, config, utils};
-use crate::build_scripts::codegen::{generate_functions_with_modules, generate_haskell_dispatch};
-use crate::build_scripts::utils::helpers::{
+use crate::build::compiler::{cabal, config, utils};
+use crate::build::codegen::{generate_functions_with_modules, generate_haskell_dispatch};
+use crate::build::utils::helpers::{
     collect_haskell_modules_from_exports, generate_user_functions_module,
 };
 

@@ -1,6 +1,6 @@
-pub mod build_scripts;
+mod build;
 pub mod ffi;
 pub mod runtime;
 
+pub use build::core::build;
 pub use vinculum_hs_macros::main;
-pub use crate::build_scripts::build::core::build;

@@ -1,46 +1,7 @@
 use std::fs;
 use std::path::Path;
 
-use crate::build_scripts::parser::{Function, extract_functions};
-
-#[allow(dead_code)]
-pub(crate) fn collect_file_modules(
-    src_dir: &Path,
-    dest_dir: &Path,
-) -> Vec<(String, Vec<Function>)> {
-    let entries = fs::read_dir(src_dir)
-        .unwrap_or_else(|e| panic!("Failed to read directory '{}': {e}", src_dir.display()));
-
-    let mut modules = Vec::new();
-
-    for entry in entries.flatten() {
-        let path = entry.path();
-
-        let is_haskell_file =
-            path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("hs");
-
-        if !is_haskell_file {
-            continue;
-        }
-
-        let Some(stem) = path.file_stem().and_then(|s| s.to_str()) else {
-            continue;
-        };
-
-        let dest = dest_dir.join(format!("{stem}.hs"));
-        fs::copy(&path, &dest)
-            .unwrap_or_else(|e| panic!("Failed to copy '{}': {e}", path.display()));
-
-        let functions = extract_functions(&path)
-            .unwrap_or_else(|e| panic!("Failed to parse '{}': {e}", path.display()));
-
-        if !functions.is_empty() {
-            modules.push((capitalize_first(stem), functions));
-        }
-    }
-
-    modules
-}
+use crate::build::parser::{Function, extract_functions};
 
 pub(crate) fn generate_user_functions_module(file_modules: &[(String, Vec<Function>)]) -> String {
     if file_modules.is_empty() {
@@ -70,7 +31,7 @@ pub(crate) fn generate_user_functions_module(file_modules: &[(String, Vec<Functi
     )
 }
 
-pub fn capitalize_first(s: &str) -> String {
+fn capitalize_first(s: &str) -> String {
     let mut chars = s.chars();
 
     match chars.next() {
@@ -79,7 +40,7 @@ pub fn capitalize_first(s: &str) -> String {
     }
 }
 
-pub fn to_snake_case(s: &str) -> String {
+pub(crate) fn to_snake_case(s: &str) -> String {
     let mut result = String::new();
 
     for (i, ch) in s.chars().enumerate() {
