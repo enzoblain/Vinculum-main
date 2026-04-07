@@ -72,21 +72,9 @@ pub(crate) fn build_haskell_dll(
         }
     })?;
 
-    let target_dir = env::var("CARGO_TARGET_DIR")
-        .map(PathBuf::from)
-        .or_else(|_| {
-            env::var("CARGO_MANIFEST_DIR").map(|dir| {
-                PathBuf::from(dir)
-                    .parent()
-                    .and_then(|p| p.parent())
-                    .unwrap()
-                    .join("target")
-            })
-        })
-        .map_err(|_| CompilerError::TargetDirResolutionFailed {
-            reason: "neither CARGO_TARGET_DIR nor CARGO_MANIFEST_DIR set".to_string(),
-        })?
-        .join("haskell");
+    let target_dir = env::var("CARGO_MANIFEST_DIR")
+        .map(|dir| PathBuf::from(dir).join("target").join("haskell"))
+        .unwrap_or_else(|_| Path::new("target/haskell").into());
 
     fs::create_dir_all(&target_dir).map_err(|e| CompilerError::DirectoryCreationFailed {
         path: target_dir.clone(),

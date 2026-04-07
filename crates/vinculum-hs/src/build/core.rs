@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::{env, fs, path::PathBuf};
 
 use crate::build::codegen::{generate_functions_with_modules, generate_haskell_dispatch};
@@ -63,12 +64,12 @@ pub fn build() -> Result<(), CompilerError> {
         &haskell_config.foreign_library,
     )?;
 
-    let haskell_dll_dir = env::var("CARGO_TARGET_DIR")
-        .map(|dir| format!("{}/haskell", dir))
-        .or_else(|_| {
-            env::var("CARGO_MANIFEST_DIR").map(|dir| format!("{}/../../target/haskell", dir))
-        })
-        .unwrap_or_else(|_| "target/haskell".to_string());
+    let haskell_dll_dir = env::var("CARGO_MANIFEST_DIR")
+        .map(|dir| PathBuf::from(dir).join("target").join("haskell"))
+        .unwrap_or_else(|_| Path::new("target/haskell").into());
+
+    let haskell_dll_dir = haskell_dll_dir.to_string_lossy().to_string();
+    println!("{}", haskell_dll_dir);
 
     println!("cargo:rustc-link-search=native={}", haskell_dll_dir);
     println!(
