@@ -1,5 +1,5 @@
 use crate::codegen::types::errors::InvalidArgumentName;
-use crate::codegen::types::traits::{FfiLangType};
+use crate::codegen::types::traits::FfiLangType;
 
 /// A named function argument associated with a language-specific FFI type.
 ///
@@ -14,7 +14,6 @@ use crate::codegen::types::traits::{FfiLangType};
 ///
 /// Prefer [`Arg::try_new`] whenever the name originates from parsed input
 /// or any other unchecked source.
-#[derive(Debug, Clone)]
 pub struct Arg<T>
 where
     T: FfiLangType,
@@ -45,10 +44,7 @@ where
     ///
     /// Returns [`InvalidArgumentName`] if the provided name does not match
     /// the expected variable naming rules.
-    pub fn try_new(
-        name: impl Into<String>,
-        r#type: T,
-    ) -> Result<Self, InvalidArgumentName> {
+    pub fn try_new(name: impl Into<String>, r#type: T) -> Result<Self, InvalidArgumentName> {
         let name: String = name.into();
 
         if !is_valid_variable_name(&name) {
@@ -118,13 +114,42 @@ pub(crate) fn normalize_arg_name(name: String) -> String {
 pub(crate) fn is_rust_keyword(name: &str) -> bool {
     matches!(
         name,
-        "as" | "break" | "const" | "continue" | "crate" |
-        "else" | "enum" | "extern" | "false" | "fn" |
-        "for" | "if" | "impl" | "in" | "let" |
-        "loop" | "match" | "mod" | "move" | "mut" |
-        "pub" | "ref" | "return" | "self" | "Self" |
-        "static" | "struct" | "super" | "trait" | "true" |
-        "type" | "unsafe" | "use" | "where" | "while" |
-        "async" | "await" | "dyn"
+        "as" | "break"
+            | "const"
+            | "continue"
+            | "crate"
+            | "else"
+            | "enum"
+            | "extern"
+            | "false"
+            | "fn"
+            | "for"
+            | "if"
+            | "impl"
+            | "in"
+            | "let"
+            | "loop"
+            | "match"
+            | "mod"
+            | "move"
+            | "mut"
+            | "pub"
+            | "ref"
+            | "return"
+            | "self"
+            | "Self"
+            | "static"
+            | "struct"
+            | "super"
+            | "trait"
+            | "true"
+            | "type"
+            | "unsafe"
+            | "use"
+            | "where"
+            | "while"
+            | "async"
+            | "await"
+            | "dyn"
     )
 }

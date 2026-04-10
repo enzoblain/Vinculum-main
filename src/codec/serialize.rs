@@ -69,7 +69,7 @@ where
             }
 
             Self::Int8(n) => {
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
                 buffer[idx] = *n as u8;
             }
             Self::Int16(n) => {
@@ -94,7 +94,7 @@ where
             }
 
             Self::U8(n) => {
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
                 buffer[idx] = *n;
             }
             Self::U16(n) => {
@@ -190,7 +190,7 @@ where
                 let len = values.len();
 
                 assert!(len <= u8::MAX as usize);
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 buffer[idx] = len as u8;
 
@@ -206,7 +206,7 @@ where
                 let len = values.len();
 
                 assert!(len <= u8::MAX as usize);
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 buffer[idx] = len as u8;
 
@@ -222,7 +222,7 @@ where
                 let len = values.len();
 
                 assert!(len <= u8::MAX as usize);
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 buffer[idx] = len as u8;
 
@@ -238,7 +238,7 @@ where
                 let len = values.len();
 
                 assert!(len <= u8::MAX as usize);
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 buffer[idx] = len as u8;
 
@@ -254,7 +254,7 @@ where
                 let len = fields.len();
 
                 assert!(len <= u8::MAX as usize);
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 buffer[idx] = len as u8;
 
@@ -279,7 +279,7 @@ where
                 let len = entries.len();
 
                 assert!(len <= u8::MAX as usize);
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 buffer[idx] = len as u8;
 
@@ -293,7 +293,7 @@ where
             }
 
             Self::Option(opt) => {
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 return match opt {
                     None => {
@@ -304,11 +304,11 @@ where
                         buffer[idx] = 1;
                         v.write_bytes(buffer, idx + 1)
                     }
-                }
+                };
             }
 
             Self::Result(res) => {
-                assert!(idx + 1 <= BUFFER_SIZE);
+                assert!(idx < BUFFER_SIZE);
 
                 let (tag, v) = match res {
                     Ok(v) => (1, v),
@@ -323,7 +323,7 @@ where
                 return g.to_value().write_bytes(buffer, idx);
             }
 
-            _ => unimplemented!()
+            _ => unimplemented!(),
         }
 
         idx

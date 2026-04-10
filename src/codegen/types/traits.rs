@@ -63,6 +63,6 @@ pub trait FfiTypeCodegen {
 /// This trait does not define additional behavior. It only groups
 /// [`FfiType`] and [`FfiTypeCodegen`] under a single bound to simplify
 /// generic constraints.
-pub(crate) trait FfiLangType: FfiType + FfiTypeCodegen {}
+pub trait FfiLangType: FfiType + FfiTypeCodegen {}
 
 impl<T> FfiLangType for T where T: FfiType + FfiTypeCodegen {}

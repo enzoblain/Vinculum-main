@@ -39,7 +39,7 @@ impl GenericResolver {
     /// - `"a"` → `"T0"`
     /// - `"b"` → `"T1"`
     /// - `"a"` → `"T0"` (same as before)
-    pub(crate) fn resolve(&mut self, name: &str) -> String {
+    pub fn resolve(&mut self, name: &str) -> String {
         if let Some(existing) = self.names.get(name) {
             return existing.clone();
         }
@@ -70,5 +70,11 @@ impl GenericResolver {
         });
 
         values
+    }
+}
+
+impl Default for GenericResolver {
+    fn default() -> Self {
+        Self::new()
     }
 }
