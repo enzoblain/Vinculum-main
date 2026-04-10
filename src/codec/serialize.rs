@@ -1,17 +1,5 @@
 use super::accepted::ToValue;
-use super::AcceptedTypes;
-use super::Value;
-
-/// Maximum buffer size used for serialization.
-///
-/// This constant defines the upper bound for the number of bytes that can be
-/// written when serializing a [`Value`] into a buffer.
-///
-/// It is used to prevent buffer overflows and enforce a fixed-size limit
-/// during encoding.
-///
-/// Serialization will panic if this limit is exceeded.
-pub(crate) const BUFFER_SIZE: usize = 1028 * 1028;
+use super::{AcceptedTypes, Value, BUFFER_SIZE};
 
 impl<'a, T> Value<'a, T>
 where

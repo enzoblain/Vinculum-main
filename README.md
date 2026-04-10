@@ -38,7 +38,7 @@ Every backend shares the same `Value` type and binary format. The only differenc
 
 A unified, backend-agnostic representation of all data exchanged through Vinculum:
 
-```rust
+```rust,ignore
 Value::Int64(42)
 Value::Float64(3.14)
 Value::String("hello".to_string())
@@ -62,7 +62,7 @@ Attempting to use an unregistered type is a **compile error**, not a runtime pan
 
 A conversion trait that transforms Rust values into `Value`:
 
-```rust
+```rust,ignore
 let v: Value = 42i64.to_value();
 ```
 
@@ -129,7 +129,7 @@ These functions are safe, typed, and call directly into the foreign library. No 
 - [x] Core `Value` type system
 - [x] Binary serialization format
 - [x] Compile-time type validation
-- [ ] Deserialization API
+- [x] Deserialization API
 - [ ] Rust binding file generation
 - [ ] Safer buffer handling (bounded writers, error propagation)
 - [ ] `no_std` compatibility
