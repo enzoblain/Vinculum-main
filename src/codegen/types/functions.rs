@@ -1,7 +1,7 @@
+use crate::codegen::types::GenericResolver;
 use crate::codegen::types::args::Arg;
 use crate::codegen::types::derive::Derive;
 use crate::codegen::types::traits::FfiLangType;
-use crate::codegen::types::GenericResolver;
 
 /// Representation of a function in the code generation pipeline.
 ///

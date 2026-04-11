@@ -1,5 +1,5 @@
 use super::accepted::ToValue;
-use super::{AcceptedTypes, Value, BUFFER_SIZE};
+use super::{AcceptedTypes, BUFFER_SIZE, Value};
 
 impl<'a, T> Value<'a, T>
 where

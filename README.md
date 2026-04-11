@@ -3,7 +3,7 @@
 [![Crates.io](https://img.shields.io/crates/v/vinculum-main.svg)](https://crates.io/crates/vinculum-main)
 [![Docs.rs](https://docs.rs/vinculum-main/badge.svg)](https://docs.rs/vinculum-main)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/your-org/vinculum/ci.yml?branch=main)](https://github.com/your-org/vinculum/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/your-org/vinculum/ci.yml?branch=main)](https://github.com/enzoblain/vinculum/actions)
 
 > Call a Haskell function as if it were a Rust function: no `unsafe`, no handwritten bindings.
 
@@ -116,11 +116,11 @@ These functions are safe, typed, and call directly into the foreign library. No 
 
 ## Ecosystem
 
-| Crate | Status | Description |
-|---|---|---|
-| `vinculum-main` | Active | Shared types, traits, and serialization (this crate) |
-| `vinculum-hs` | Active | Haskell ↔ Rust bridge |
-| more backends | Planned | — |
+| Crate           | Status  | Description                                          |
+| --------------- | ------- | ---------------------------------------------------- |
+| `vinculum-main` | Active  | Shared types, traits, and serialization (this crate) |
+| `vinculum-hs`   | Active  | Haskell ↔ Rust bridge                                |
+| more backends   | Planned | —                                                    |
 
 ---
 

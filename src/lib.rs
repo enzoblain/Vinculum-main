@@ -17,5 +17,5 @@
 //!
 //! Most users will primarily interact with the [`ffi`] layer built on top
 //! of these components.
-pub mod codegen;
 pub mod codec;
+pub mod codegen;

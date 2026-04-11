@@ -15,12 +15,12 @@
 //! provided `accepted_*` macros to register supported codec.
 
 pub(crate) mod accepted;
+mod deserialize;
 mod serialize;
 mod value;
-mod deserialize;
 
 pub use accepted::{AcceptedTypes, ToValue};
-pub use value::{Value, Null, Handle, FnPtr, Array, Tuple};
+pub use value::{Array, FnPtr, Handle, Null, Tuple, Value};
 
 /// Maximum buffer size used for serialization.
 ///
