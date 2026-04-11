@@ -7,4 +7,5 @@
 //! generation, including function signatures, argument representations,
 //! and FFI-aware type abstractions.
 
+pub mod rust;
 pub mod types;
